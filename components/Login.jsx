@@ -7,6 +7,7 @@ import { BASE_URL } from "../src/utils/constants";
 const Login = ()=> {
   const [emailId, setEmailId] = useState("shifa@gmail.com"); 
   const [password, setPassword] = useState("Shifa@123");
+  const [error, setError] = useState("")
   const dispatch =useDispatch();
   const navigate = useNavigate();
   const handleLogin = async ()=>{
@@ -20,8 +21,9 @@ const Login = ()=> {
       {withCredentials: true});
       // console.log("Login successful:", res.data); 
       dispatch(addUser(res.data));
-      navigate("/");
+      return navigate("/");
     }catch(err){
+      setError(err?.response?.data|| "Something went wrong!!");
       console.log(err);
     }
   }
@@ -65,6 +67,7 @@ const Login = ()=> {
           </div>
 
           {/* Login Button */}
+          <p className="text-red-500">{error}</p>
           <div className="mt-6 flex justify-center">
             <button className="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-6 rounded-lg transition" onClick={handleLogin}>
               Login
