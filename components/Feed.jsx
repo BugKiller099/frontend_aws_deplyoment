@@ -11,12 +11,12 @@ const Feed = () => {
   const dispatch = useDispatch();
   const getFeed = async() =>{
      
-    // if(feed !== null) return;
+    
     try{
       const res = await axios.get(BASE_URL +"/feed", {withCredentials: true});
     dispatch(addFeed(res.data?.data || []));
     }catch(err){
-         //hangle error gracefully
+       
         //console.log(err.message);
     }
 
@@ -26,6 +26,8 @@ const Feed = () => {
     getFeed();
     //console.log("Updated Feed from Redux:", feed);
   }, []);
+  if(!feed) return ;
+  if(feed.length<= 0) return <h1 className='flex justify-center my-10'>No new users</h1>
   return  (  feed&& (
     <div className='flex justify-center ay-18'>
            <UserCard user={feed[0]}/>
