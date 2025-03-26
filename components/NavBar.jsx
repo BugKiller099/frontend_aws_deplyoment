@@ -4,70 +4,100 @@ import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../src/utils/constants";
 import axios from "axios";
 import { removeUser } from "../src/utils/userSlice";
+
 const NavBar = () => {
   const user = useSelector((store) => store.user);
-  // console.log(user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogout = async()=>{
-    try{
-      const res = await axios.post(BASE_URL +"/logout",{}, {withCredintials: true});
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
       
       dispatch(removeUser());
       return navigate("/login");
-
-    }catch(err){
-       //Error logic maybe redirect to error page
-       console.log(err.message);
+    } catch (err) {
+      console.log(err.message);
     }
-  }
+  };
+
   return (
-    <div className="navbar bg-base-300 shadow-sm">
-      <div className="flex-1">
-        <Link to="/" className="btn btn-ghost text-xl">
-          <u>👨‍💻</u>Developer'sClub
-        </Link>
-      </div>
-      {user && (
-        <div className="flex gap-2">
-        <div className="form-control">Welcome {user.firstName} </div>
-        <div className="dropdown dropdown-end mx-5">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
+    <nav className="navbar bg-base-300 shadow-md transition-all duration-300 ease-in-out">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className="flex-1 flex items-center">
+          <Link 
+            to="/" 
+            className="btn btn-ghost text-xl flex items-center space-x-2 hover:bg-base-200 rounded-lg transition-all"
           >
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src={user.photoUrl}
-              />
+            <span className="text-2xl">👨‍💻</span>
+            <span className="font-bold tracking-tight">Developer's Club</span>
+          </Link>
+        </div>
+        
+        {user && (
+          <div className="flex items-center space-x-4">
+            <div className="text-sm font-medium opacity-80 hidden md:block">
+              Welcome, {user.firstName}
+            </div>
+            
+            <div className="dropdown dropdown-end">
+              <div 
+                tabIndex={0} 
+                role="button" 
+                className="btn btn-ghost btn-circle avatar transition-transform hover:scale-105"
+              >
+                <div className="w-10 rounded-full ring-2 ring-base-300 ring-offset-2">
+                  <img
+                    src={user.photoUrl}
+                    alt="User avatar"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+              
+              <ul 
+                tabIndex={0} 
+                className="menu menu-sm dropdown-content bg-base-100 rounded-xl w-56 p-2 shadow-lg border border-base-200 mt-3 space-y-1"
+              >
+                <li>
+                  <Link 
+                    to="/profile" 
+                    className="flex justify-between items-center hover:bg-base-200 rounded-md"
+                  >
+                    Profile
+                    <span className="badge badge-primary badge-sm">New</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/connections" 
+                    className="hover:bg-base-200 rounded-md"
+                  >
+                    Friends
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/requests" 
+                    className="hover:bg-base-200 rounded-md"
+                  >
+                    Requests
+                  </Link>
+                </li>
+                <li>
+                  <a 
+                    onClick={handleLogout} 
+                    className="hover:bg-base-200 rounded-md text-error"
+                  >
+                    Logout
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-          >
-            <li>
-              <Link to="/profile" className="justify-between">
-                Profile
-                <span className="badge">New</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/connections">Friends</Link>
-            </li>
-            <li>
-              <Link to="/requests"> Requests</Link>
-            </li>
-            <li>
-              <a onClick={handleLogout}>Logout</a>
-            </li>
-          </ul>
-        </div>
+        )}
       </div>
-      )}
-    </div>
+    </nav>
   );
 };
 
