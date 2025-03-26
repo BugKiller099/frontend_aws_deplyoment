@@ -44,98 +44,133 @@ const EditProfile = ({ user }) => {
   return (
     <>
       <div className="flex justify-center my-10">
+        {/* Form Section */}
         <div className="flex justify-center mx-10">
-          <div className="card bg-base-300 w-96 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title justify-center">Edit Profile</h2>
-              <div>
-                <label className="form-control w-full max-w-xs my-2">
+          <div className="card bg-base-300 w-96 shadow-xl rounded-lg">
+            <div className="card-body p-6">
+              {/* Title */}
+              <h2 className="card-title justify-center text-2xl font-bold mb-4">Edit Profile</h2>
+
+              {/* Form Fields */}
+              <div className="space-y-4">
+                {/* First Name */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">First Name:</span>
+                    <span className="label-text font-medium">First Name:</span>
                   </div>
                   <input
                     type="text"
                     value={firstName}
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Enter first name"
                   />
                 </label>
-                <label className="form-control w-full max-w-xs my-2">
+
+                {/* Last Name */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">Last Name:</span>
+                    <span className="label-text font-medium">Last Name:</span>
                   </div>
                   <input
                     type="text"
                     value={lastName}
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Enter last name"
                   />
                 </label>
-                <label className="form-control w-full max-w-xs my-2">
+
+                {/* Photo URL */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">Photo URL :</span>
+                    <span className="label-text font-medium">Photo URL:</span>
                   </div>
                   <input
                     type="text"
                     value={photoUrl}
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     onChange={(e) => setPhotoUrl(e.target.value)}
+                    placeholder="Enter photo URL"
                   />
                 </label>
-                <label className="form-control w-full max-w-xs my-2">
+
+                {/* Age */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">Age:</span>
+                    <span className="label-text font-medium">Age:</span>
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     value={age}
-                    className="input input-bordered w-full max-w-xs"
+                    min="18"
+                    max="100"
+                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     onChange={(e) => setAge(e.target.value)}
+                    placeholder="Enter age"
                   />
                 </label>
-                <label className="form-control w-full max-w-xs my-2">
+
+                {/* Gender */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">Gender:</span>
+                    <span className="label-text font-medium">Gender:</span>
                   </div>
                   <select
-                    className="select select-bordered w-full max-w-xs"
+                    className="select select-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
                     <option value="">Select Gender</option>
-                    <option value="male">male</option>
-                    <option value="female">female</option>
-                    <option value="None">None</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="none">Prefer Not to Say</option>
                   </select>
                 </label>
-                <label className="form-control w-full max-w-xs my-2">
+
+                {/* About */}
+                <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text">About:</span>
+                    <span className="label-text font-medium">About:</span>
                   </div>
                   <textarea
                     value={about}
-                    className="textarea textarea-bordered w-full max-w-xs"
-                    rows="4"
+                    className="textarea textarea-bordered w-full h-32 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     onChange={(e) => setAbout(e.target.value)}
+                    placeholder="Tell us about yourself..."
+                    maxLength={250}
                   />
                 </label>
               </div>
-              <p className="text-red-500">{error}</p>
-              <div className="card-actions justify-center m-2">
-                <button className="btn btn-primary" onClick={saveProfile}>
+
+              {/* Error Message */}
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+              {/* Save Button */}
+              <div className="card-actions justify-center mt-6">
+                <button
+                  className="btn btn-primary w-full hover:scale-105 transition-transform duration-300"
+                  onClick={saveProfile}
+                >
                   Save Profile
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <UserCard
-          user={{ firstName, lastName, photoUrl, age, gender, about }}
-        />
+
+        {/* Preview Card */}
+        <div className="hidden md:block ml-10">
+          <UserCard
+            user={{ firstName, lastName, photoUrl, age, gender, about }}
+          />
+        </div>
       </div>
+
+      {/* Toast Notification */}
       {showToast && (
-        <div className="toast toast-top toast-center">
-          <div className="alert alert-success">
+        <div className="toast toast-top toast-center z-50">
+          <div className="alert alert-success shadow-lg">
             <span>Profile saved successfully.</span>
           </div>
         </div>
@@ -143,4 +178,5 @@ const EditProfile = ({ user }) => {
     </>
   );
 };
+
 export default EditProfile;
