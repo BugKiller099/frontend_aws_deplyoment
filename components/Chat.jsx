@@ -23,7 +23,7 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!userId) {
+    if (!userId || !targetUserId) {
       return;
     }
     
@@ -56,6 +56,7 @@ const Chat = () => {
     
     return () => {
       socket.disconnect();
+      console.log("🔌 Socket disconnected on cleanup");
     };
   }, [userId, targetUserId, user]);
 
