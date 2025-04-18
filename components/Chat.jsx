@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { createSocketConnection } from '../src/utils/socket';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { BASE_URL } from '../src/utils/constants';
 
 const Chat = () => {
   const { targetUserId } = useParams();
@@ -12,6 +14,41 @@ const Chat = () => {
   const socketRef = useRef(null);
   const user = useSelector(store => store.user);
   const userId = user?._id;
+
+  const fetchChatMessage = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
+        withCredentials: true,
+      });
+  
+      const chatData = response.data;
+  
+      const chatMessages = chatData.messages.map(msg => ({
+        sender: msg.senderId._id === userId ? 'self' : 'other',
+        text: msg.text,
+        name: msg.senderId.firstName,
+        time: new Date(msg.createdAt).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        photoUrl: msg.senderId.photoUrl,
+      }));
+  
+      setMessages(chatMessages);
+  
+      setTargetUserInfo(
+        chatData.participants.find(p => p._id !== userId)
+      );
+  
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+    }
+  };
+  
+
+  useEffect(()=>{
+    fetchChatMessage();
+  },[userId, targetUserId]);
 
   // Scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -56,7 +93,7 @@ const Chat = () => {
     
     return () => {
       socket.disconnect();
-      console.log("🔌 Socket disconnected on cleanup");
+      console.log("🔌 Socket disconnected on cleanup" +socket.id);
     };
   }, [userId, targetUserId, user]);
 
@@ -95,6 +132,13 @@ const Chat = () => {
       return "/api/placeholder/40/40"; // Default placeholder
     }
   };
+  if (!userId || !targetUserId || messages.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-base-100">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
