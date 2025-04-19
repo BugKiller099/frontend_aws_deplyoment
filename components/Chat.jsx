@@ -19,7 +19,7 @@ const Chat = () => {
   const fetchChatMessage = async () => {
     try {
       console.log(BASE_URL);
-      const response = await axios.get(`${BASE_URL}/${targetUserId}`, {
+      const response = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
         withCredentials: true,
       });
   
