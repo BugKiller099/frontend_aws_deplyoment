@@ -1,23 +1,29 @@
-import { useState } from "react";
-import UserCard from "./UserCard";
-import axios from "axios";
-import { BASE_URL } from "../src/utils/constants";
-import { useDispatch } from "react-redux";
-import { addUser } from "../src/utils/userSlice";
+"use client"
+
+import { useState } from "react"
+import UserCard from "./UserCard"
+import axios from "axios"
+import { BASE_URL } from "../src/utils/constants"
+import { useDispatch } from "react-redux"
+import { addUser } from "../src/utils/userSlice"
+import { Camera, User, Calendar, Users, FileText, Save, Loader2 } from "lucide-react"
 
 const EditProfile = ({ user }) => {
-  const [firstName, setFirstName] = useState(user.firstName);
-  const [lastName, setLastName] = useState(user.lastName);
-  const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
-  const [age, setAge] = useState(user.age || "");
-  const [gender, setGender] = useState(user.gender || "");
-  const [about, setAbout] = useState(user.about || "");
-  const [error, setError] = useState("");
-  const dispatch = useDispatch();
-  const [showToast, setShowToast] = useState(false);
+  const [firstName, setFirstName] = useState(user.firstName)
+  const [lastName, setLastName] = useState(user.lastName)
+  const [photoUrl, setPhotoUrl] = useState(user.photoUrl)
+  const [age, setAge] = useState(user.age || "")
+  const [gender, setGender] = useState(user.gender || "")
+  const [about, setAbout] = useState(user.about || "")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
+  const [showToast, setShowToast] = useState(false)
 
   const saveProfile = async () => {
-    setError("");
+    setError("")
+    setIsLoading(true)
+
     try {
       const res = await axios.patch(
         BASE_URL + "/profile/edit",
@@ -29,95 +35,100 @@ const EditProfile = ({ user }) => {
           gender,
           about,
         },
-        { withCredentials: true }
-      );
-      dispatch(addUser(res?.data?.data));
-      setShowToast(true);
+        { withCredentials: true },
+      )
+      dispatch(addUser(res?.data?.data))
+      setShowToast(true)
       setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+        setShowToast(false)
+      }, 3000)
     } catch (err) {
-      setError(err.response.data);
+      setError(err.response?.data || "Failed to update profile")
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <>
-      <div className="flex justify-center my-10">
-        {/* Form Section */}
-        <div className="flex justify-center mx-10">
-          <div className="card bg-base-300 w-96 shadow-xl rounded-lg">
-            <div className="card-body p-6">
-              {/* Title */}
-              <h2 className="card-title justify-center text-2xl font-bold mb-4">Edit Profile</h2>
+    <div className="container mx-auto px-4 py-8 mb-16">
+      <h1 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">Edit Your Profile</h1>
 
-              {/* Form Fields */}
-              <div className="space-y-4">
-                {/* First Name */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">First Name:</span>
-                  </div>
+      <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
+        {/* Form Section */}
+        <div className="flex-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="space-y-6">
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    First Name
+                  </label>
                   <input
                     type="text"
                     value={firstName}
-                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white"
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Enter first name"
                   />
-                </label>
+                </div>
 
-                {/* Last Name */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">Last Name:</span>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Last Name
+                  </label>
                   <input
                     type="text"
                     value={lastName}
-                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white"
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Enter last name"
                   />
-                </label>
+                </div>
+              </div>
 
-                {/* Photo URL */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">Photo URL:</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={photoUrl}
-                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
-                    onChange={(e) => setPhotoUrl(e.target.value)}
-                    placeholder="Enter photo URL"
-                  />
+              {/* Photo URL */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <Camera className="w-4 h-4" />
+                  Photo URL
                 </label>
+                <input
+                  type="text"
+                  value={photoUrl}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white"
+                  onChange={(e) => setPhotoUrl(e.target.value)}
+                  placeholder="Enter photo URL"
+                />
+              </div>
 
-                {/* Age */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">Age:</span>
-                  </div>
+              {/* Age & Gender */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Age
+                  </label>
                   <input
                     type="number"
                     value={age}
                     min="18"
                     max="100"
-                    className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white"
                     onChange={(e) => setAge(e.target.value)}
                     placeholder="Enter age"
                   />
-                </label>
+                </div>
 
-                {/* Gender */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">Gender:</span>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Gender
+                  </label>
                   <select
-                    className="select select-bordered w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white"
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -126,57 +137,80 @@ const EditProfile = ({ user }) => {
                     <option value="female">Female</option>
                     <option value="none">Prefer Not to Say</option>
                   </select>
-                </label>
+                </div>
+              </div>
 
-                {/* About */}
-                <label className="form-control w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text font-medium">About:</span>
-                  </div>
-                  <textarea
-                    value={about}
-                    className="textarea textarea-bordered w-full h-32 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
-                    onChange={(e) => setAbout(e.target.value)}
-                    placeholder="Tell us about yourself..."
-                    maxLength={250}
-                  />
+              {/* About */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  About
                 </label>
+                <textarea
+                  value={about}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-white resize-none"
+                  onChange={(e) => setAbout(e.target.value)}
+                  placeholder="Tell us about yourself..."
+                  maxLength={250}
+                  rows={5}
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-right">{about.length}/250 characters</p>
               </div>
 
               {/* Error Message */}
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+              {error && (
+                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
 
               {/* Save Button */}
-              <div className="card-actions justify-center mt-6">
-                <button
-                  className="btn btn-primary w-full hover:scale-105 transition-transform duration-300"
-                  onClick={saveProfile}
-                >
-                  Save Profile
-                </button>
-              </div>
+              <button
+                className="w-full flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:opacity-70"
+                onClick={saveProfile}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Save Profile
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
 
         {/* Preview Card */}
-        <div className="hidden md:block ml-10">
-          <UserCard
-            user={{ firstName, lastName, photoUrl, age, gender, about }}
-          />
+        <div className="lg:w-[400px] hidden lg:block">
+          <div className="sticky top-20">
+            {/* <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4 text-center">Profile Preview</h3> */}
+            <UserCard user={{ _id: user._id, firstName, lastName, photoUrl, age, gender, about }} isPreview={true} />
+          </div>
         </div>
       </div>
 
       {/* Toast Notification */}
       {showToast && (
-        <div className="toast toast-top toast-center z-50">
-          <div className="alert alert-success shadow-lg">
-            <span>Profile saved successfully.</span>
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Profile saved successfully</span>
           </div>
         </div>
       )}
-    </>
-  );
-};
+    </div>
+  )
+}
 
-export default EditProfile;
+export default EditProfile
